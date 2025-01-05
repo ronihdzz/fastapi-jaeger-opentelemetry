@@ -1,0 +1,23 @@
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=9411
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "4317:4317"   # OpenTelemetry gRPC
+      - "4318:4318"   # OpenTelemetry HTTP
+      - "9411:9411"   # Zipkin
+  troni-api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - ROOT_PATH=/
+      - PORT=9000
+    ports:
+      - "9000:9000"
+    env_file:
+      - ./.env.docker
+    depends_on:
+      - jaeger
